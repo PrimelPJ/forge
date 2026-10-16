@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "forge"
+version = "0.1.0"
+description = "ICS/SCADA security monitoring lab with simulated water treatment plant"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Primel Jayawardana" }]
+dependencies = ["aiohttp>=3.9"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+forge = "forge.__main__:main"
