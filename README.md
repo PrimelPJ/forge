@@ -2,8 +2,8 @@
 
 ICS/SCADA security monitoring lab with a simulated water treatment plant.
 
-Forge runs a virtual water treatment facility — tank, intake pump, chemical
-dosing, outlet valve — on a real Modbus TCP server you can point any Modbus
+Forge runs a virtual water treatment facility - tank, intake pump, chemical
+dosing, outlet valve - on a real Modbus TCP server you can point any Modbus
 tool or attack script at. An HMI keeps the plant running while a passive
 monitor watches every frame, detects threats, and maps them to MITRE ATT&CK
 for ICS. A live dashboard shows plant state, alerts, and an OT asset
@@ -29,16 +29,16 @@ wire is parsed and inspected.
 
 ```mermaid
 flowchart TB
-    subgraph "Level 0 — Physical Process"
+    subgraph "Level 0 - Physical Process"
         TANK[Tank + Pumps + Valve<br/>process.py]
     end
-    subgraph "Level 1 — Basic Control"
+    subgraph "Level 1 - Basic Control"
         PLC[PLC Server<br/>Modbus TCP :5020]
     end
-    subgraph "Level 2 — Supervisory"
+    subgraph "Level 2 - Supervisory"
         HMI[HMI Client<br/>reads + writes]
     end
-    subgraph "Level 3 — Monitoring"
+    subgraph "Level 3 - Monitoring"
         MON[Traffic Monitor<br/>+ Asset Discovery]
         DET[Detection Engine<br/>MITRE ATT&CK ICS]
         DASH[Live Dashboard :8080]
@@ -90,19 +90,19 @@ python scripts/hijack.py mask
 python scripts/flood.py --duration 10
 ```
 
-Watch the dashboard — alerts appear in real time with MITRE ATT&CK tags.
+Watch the dashboard - alerts appear in real time with MITRE ATT&CK tags.
 
 ## Detection rules
 
 | Rule | Fires when | ATT&CK for ICS |
 |---|---|---|
-| ICS-001: Unauthorized write | Write from an IP that is not the HMI | T0855 — Unauthorized Command Message |
-| ICS-002: Reconnaissance scan | 5+ unit IDs probed within 10 seconds | T0846 — Remote System Discovery |
-| ICS-003: Dangerous setpoint | Alarm threshold pushed outside safe range | T0836 — Modify Parameter |
-| ICS-004: E-stop manipulation | Emergency stop coil toggled by non-HMI | T0816 — Device Restart/Shutdown |
-| ICS-005: Modbus flooding | Request rate exceeds 5 req/s from single IP | T0814 — Denial of Service |
-| ICS-006: Coil brute force | 8+ coil writes in 5 seconds | T0806 — Brute Force I/O |
-| ICS-007: Process anomaly | Process value deviates 3σ from baseline | T0831 — Manipulation of Control |
+| ICS-001: Unauthorized write | Write from an IP that is not the HMI | T0855 - Unauthorized Command Message |
+| ICS-002: Reconnaissance scan | 5+ unit IDs probed within 10 seconds | T0846 - Remote System Discovery |
+| ICS-003: Dangerous setpoint | Alarm threshold pushed outside safe range | T0836 - Modify Parameter |
+| ICS-004: E-stop manipulation | Emergency stop coil toggled by non-HMI | T0816 - Device Restart/Shutdown |
+| ICS-005: Modbus flooding | Request rate exceeds 5 req/s from single IP | T0814 - Denial of Service |
+| ICS-006: Coil brute force | 8+ coil writes in 5 seconds | T0806 - Brute Force I/O |
+| ICS-007: Process anomaly | Process value deviates 3σ from baseline | T0831 - Manipulation of Control |
 
 ## Register map
 

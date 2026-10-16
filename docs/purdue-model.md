@@ -1,36 +1,36 @@
-# Purdue Model — Network Architecture
+# Purdue Model - Network Architecture
 
 The Forge lab maps to the Purdue Enterprise Reference Architecture (IEC 62443),
 the standard framework for segmenting ICS/SCADA networks.
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Level 5 — Enterprise Network (internet, email) │
+│  Level 5 - Enterprise Network (internet, email) │
 │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─  │
-│  Level 4 — Business Planning (ERP, databases)   │
+│  Level 4 - Business Planning (ERP, databases)   │
 ├─────────────────── DMZ ─────────────────────────┤
-│  Level 3.5 — Industrial DMZ (historian mirror,  │
+│  Level 3.5 - Industrial DMZ (historian mirror,  │
 │              patch server, remote access jump)   │
 ├─────────────────────────────────────────────────┤
-│  Level 3 — Site Operations                      │
+│  Level 3 - Site Operations                      │
 │  ┌─────────────┐  ┌───────────────────┐         │
 │  │  Historian   │  │  Forge Dashboard  │         │
 │  │  (data log)  │  │  (alert monitor)  │         │
 │  └─────────────┘  └───────────────────┘         │
 ├─────────────────────────────────────────────────┤
-│  Level 2 — Area Supervisory Control             │
+│  Level 2 - Area Supervisory Control             │
 │  ┌─────────────┐                                │
 │  │     HMI     │  ← reads process, sends        │
 │  │  (client)   │    setpoints to PLC             │
 │  └─────────────┘                                │
 ├─────────────────────────────────────────────────┤
-│  Level 1 — Basic Control                        │
+│  Level 1 - Basic Control                        │
 │  ┌─────────────┐                                │
 │  │     PLC     │  ← Modbus TCP server            │
 │  │  (unit 1)   │    runs process logic            │
 │  └─────────────┘                                │
 ├─────────────────────────────────────────────────┤
-│  Level 0 — Physical Process                     │
+│  Level 0 - Physical Process                     │
 │  ┌────────┐ ┌────────┐ ┌────────┐ ┌──────────┐ │
 │  │ Intake │ │ Dosing │ │  Tank  │ │  Outlet  │ │
 │  │  Pump  │ │  Pump  │ │ (level)│ │  Valve   │ │
@@ -58,9 +58,9 @@ unidirectional gateways or tightly firewalled proxies.
 The attack scripts in `scripts/` simulate what happens when an attacker
 breaches the DMZ and lands on the Level 1-2 network:
 
-- **recon.py** — scans for PLCs (Level 1 discovery)
-- **hijack.py** — sends unauthorized writes to actuators (Level 0 manipulation)
-- **flood.py** — DoS against the PLC (Level 1 disruption)
+- **recon.py** - scans for PLCs (Level 1 discovery)
+- **hijack.py** - sends unauthorized writes to actuators (Level 0 manipulation)
+- **flood.py** - DoS against the PLC (Level 1 disruption)
 
 Each attack is detected by the monitor at Level 3 and mapped to MITRE
 ATT&CK for ICS.

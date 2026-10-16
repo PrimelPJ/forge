@@ -1,7 +1,7 @@
 """Modbus reconnaissance: enumerate unit IDs and function codes.
 
 Scans the PLC for responsive unit IDs and probes each supported function
-code.  This is the ICS equivalent of a port scan — a common first step
+code.  This is the ICS equivalent of a port scan - a common first step
 in OT network reconnaissance (MITRE ATT&CK for ICS: T0846).
 
 Usage:
@@ -66,7 +66,7 @@ def main() -> None:
         if resp:
             frame = parse_frame(resp)
             if frame and not frame.is_error:
-                print(f"[+] Unit ID {uid}: ALIVE — responds to input register reads")
+                print(f"[+] Unit ID {uid}: ALIVE - responds to input register reads")
                 found.append(uid)
 
                 # Probe function codes
