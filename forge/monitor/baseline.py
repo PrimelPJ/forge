@@ -81,5 +81,10 @@ class ProcessBaseline:
             )
 
         self.flow_rate.add(snapshot["flow_rate"])
+        if self.flow_rate.is_anomaly(snapshot["flow_rate"]):
+            anomalies.append(
+                f"Flow rate {snapshot['flow_rate']:.1f} L/min deviates from "
+                f"baseline {self.flow_rate.mean:.1f} +/- {self.flow_rate.std:.1f}"
+            )
 
         return anomalies
