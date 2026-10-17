@@ -31,6 +31,7 @@ SAFE_TANK_HIGH = 95
 SAFE_TANK_LOW = 5
 SAFE_CHLORINE_HIGH = 800  # register value, 8.00 mg/L
 
+SAFE_CHLORINE_LOW = 20   # register value, 0.20 mg/L minimum residual
 RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 
