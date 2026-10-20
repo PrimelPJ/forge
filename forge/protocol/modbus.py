@@ -206,3 +206,23 @@ def error_response(tid: int, uid: int, fc: int, exception_code: int) -> bytes:
 ILLEGAL_FUNCTION = 0x01
 ILLEGAL_DATA_ADDRESS = 0x02
 ILLEGAL_DATA_VALUE = 0x03
+
+
+# Modbus exception codes (IEC 61158).
+# Used for classifying PLC error responses in the traffic monitor.
+EXCEPTION_CODES = {
+    0x01: "ILLEGAL_FUNCTION",
+    0x02: "ILLEGAL_DATA_ADDRESS",
+    0x03: "ILLEGAL_DATA_VALUE",
+    0x04: "SERVER_DEVICE_FAILURE",
+    0x05: "ACKNOWLEDGE",
+    0x06: "SERVER_DEVICE_BUSY",
+    0x08: "MEMORY_PARITY_ERROR",
+    0x0A: "GATEWAY_PATH_UNAVAILABLE",
+    0x0B: "GATEWAY_TARGET_DEVICE_FAILED",
+}
+
+
+def describe_exception(code: int) -> str:
+    """Return human-readable name for a Modbus exception code."""
+    return EXCEPTION_CODES.get(code, f"UNKNOWN_EXCEPTION(0x{code:02X})")
