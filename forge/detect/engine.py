@@ -130,6 +130,26 @@ class DetectionEngine:
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
+            if tx.address == 4 and tx.value > SAFE_PUMP_SPEED_MAX:
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: pump speed runaway",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Pump speed setpoint {tx.value} RPM exceeds safe max {SAFE_PUMP_SPEED_MAX} RPM",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == 5 and tx.value > SAFE_PRESSURE_MAX:
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: line pressure exceeded",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Pressure setpoint {tx.value} PSI exceeds safe max {SAFE_PRESSURE_MAX} PSI",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
         return []
 
     def _rule_estop_manipulation(self, tx: Transaction) -> list[Alert]:
