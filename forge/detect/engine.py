@@ -38,6 +38,13 @@ RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 COIL_BRUTE_THRESHOLD = 8  # coil writes in 5 seconds = brute force (T0806)
 
+# Modbus register addresses for setpoint rules
+ADDR_TANK_HIGH_SETPOINT = 2
+ADDR_TANK_LOW_SETPOINT = 3
+ADDR_PUMP_SPEED_SETPOINT = 4
+ADDR_PRESSURE_SETPOINT = 5
+ADDR_CHLORINE_SETPOINT = 6
+
 
 class DetectionEngine:
     """Evaluates traffic against ICS-specific detection rules."""
@@ -110,7 +117,7 @@ class DetectionEngine:
         if not tx.is_write or tx.address is None or tx.value is None:
             return []
         if tx.function_code == 0x06:  # write single register
-            if tx.address == 2 and tx.value > SAFE_TANK_HIGH:
+            if tx.address == ADDR_TANK_HIGH_SETPOINT and tx.value > SAFE_TANK_HIGH:
                 return [Alert(
                     rule_id="ICS-003",
                     title="Dangerous setpoint: tank high threshold",
@@ -120,7 +127,7 @@ class DetectionEngine:
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
-            if tx.address == 3 and tx.value < SAFE_TANK_LOW:
+            if tx.address == ADDR_TANK_LOW_SETPOINT and tx.value < SAFE_TANK_LOW:
                 return [Alert(
                     rule_id="ICS-003",
                     title="Dangerous setpoint: tank low threshold",
@@ -130,7 +137,7 @@ class DetectionEngine:
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
-            if tx.address == 4 and tx.value > SAFE_PUMP_SPEED_MAX:
+            if tx.address == ADDR_PUMP_SPEED_SETPOINT and tx.value > SAFE_PUMP_SPEED_MAX:
                 return [Alert(
                     rule_id="ICS-003",
                     title="Dangerous setpoint: pump speed runaway",
@@ -140,13 +147,23 @@ class DetectionEngine:
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
-            if tx.address == 5 and tx.value > SAFE_PRESSURE_MAX:
+            if tx.address == ADDR_PRESSURE_SETPOINT and tx.value > SAFE_PRESSURE_MAX:
                 return [Alert(
                     rule_id="ICS-003",
                     title="Dangerous setpoint: line pressure exceeded",
                     severity="high",
                     src_ip=tx.src_ip,
                     detail=f"Pressure setpoint {tx.value} PSI exceeds safe max {SAFE_PRESSURE_MAX} PSI",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == ADDR_CHLORINE_SETPOINT and tx.value > SAFE_CHLORINE_HIGH:
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: chlorine overdose",
+                    severity="critical",
+                    src_ip=tx.src_ip,
+                    detail=f"Chlorine setpoint {tx.value} exceeds safe max {SAFE_CHLORINE_HIGH} (8.00 mg/L)",
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
