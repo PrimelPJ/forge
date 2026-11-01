@@ -167,6 +167,16 @@ class DetectionEngine:
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
+            if tx.address == ADDR_CHLORINE_SETPOINT and tx.value < SAFE_CHLORINE_LOW:
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: chlorine under-dose",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Chlorine setpoint {tx.value} below safe minimum {SAFE_CHLORINE_LOW} (0.20 mg/L residual)",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
         return []
 
     def _rule_estop_manipulation(self, tx: Transaction) -> list[Alert]:
