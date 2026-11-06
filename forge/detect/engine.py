@@ -34,6 +34,7 @@ SAFE_CHLORINE_HIGH = 800  # register value, 8.00 mg/L
 SAFE_CHLORINE_LOW = 20   # register value, 0.20 mg/L minimum residual
 SAFE_PUMP_SPEED_MAX = 1750  # RPM, above this indicates runaway condition
 SAFE_PRESSURE_MAX = 120     # PSI, maximum safe line pressure
+SAFE_FLOW_RATE_MAX = 2500   # L/min, above this indicates an unsafe flow condition
 RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 COIL_BRUTE_THRESHOLD = 8  # coil writes in 5 seconds = brute force (T0806)
@@ -44,6 +45,7 @@ ADDR_TANK_LOW_SETPOINT = 3
 ADDR_PUMP_SPEED_SETPOINT = 4
 ADDR_PRESSURE_SETPOINT = 5
 ADDR_CHLORINE_SETPOINT = 6
+ADDR_FLOW_RATE_SETPOINT = 7
 
 
 class DetectionEngine:
@@ -174,6 +176,16 @@ class DetectionEngine:
                     severity="high",
                     src_ip=tx.src_ip,
                     detail=f"Chlorine setpoint {tx.value} below safe minimum {SAFE_CHLORINE_LOW} (0.20 mg/L residual)",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == ADDR_FLOW_RATE_SETPOINT and tx.value > SAFE_FLOW_RATE_MAX:
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: flow rate exceeded",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Flow rate setpoint {tx.value} L/min exceeds safe max {SAFE_FLOW_RATE_MAX} L/min",
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
