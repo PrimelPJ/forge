@@ -53,6 +53,7 @@ class ProcessBaseline:
         self.tank_level = Baseline()
         self.chlorine = Baseline()
         self.inlet_pressure = Baseline()
+        self.outlet_pressure = Baseline()
         self.flow_rate = Baseline()
 
     def update(self, snapshot: dict) -> list[str]:
@@ -78,6 +79,13 @@ class ProcessBaseline:
             anomalies.append(
                 f"Inlet pressure {snapshot['inlet_pressure']:.1f} PSI deviates from "
                 f"baseline {self.inlet_pressure.mean:.1f} +/- {self.inlet_pressure.std:.1f}"
+            )
+
+        self.outlet_pressure.add(snapshot["outlet_pressure"])
+        if self.outlet_pressure.is_anomaly(snapshot["outlet_pressure"]):
+            anomalies.append(
+                f"Outlet pressure {snapshot['outlet_pressure']:.1f} PSI deviates from "
+                f"baseline {self.outlet_pressure.mean:.1f} +/- {self.outlet_pressure.std:.1f}"
             )
 
         self.flow_rate.add(snapshot["flow_rate"])
