@@ -35,6 +35,8 @@ SAFE_CHLORINE_LOW = 20   # register value, 0.20 mg/L minimum residual
 SAFE_PUMP_SPEED_MAX = 1750  # RPM, above this indicates runaway condition
 SAFE_PRESSURE_MAX = 120     # PSI, maximum safe line pressure
 SAFE_FLOW_RATE_MAX = 2500   # L/min, above this indicates an unsafe flow condition
+SAFE_VALVE_POSITION_MAX = 100  # percent open, above this is an invalid register write
+SAFE_VALVE_POSITION_MIN = 0    # percent open, below this is an invalid register write
 RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 COIL_BRUTE_THRESHOLD = 8  # coil writes in 5 seconds = brute force (T0806)
@@ -46,6 +48,7 @@ ADDR_PUMP_SPEED_SETPOINT = 4
 ADDR_PRESSURE_SETPOINT = 5
 ADDR_CHLORINE_SETPOINT = 6
 ADDR_FLOW_RATE_SETPOINT = 7
+ADDR_VALVE_POSITION_SETPOINT = 8
 
 
 class DetectionEngine:
@@ -186,6 +189,16 @@ class DetectionEngine:
                     severity="high",
                     src_ip=tx.src_ip,
                     detail=f"Flow rate setpoint {tx.value} L/min exceeds safe max {SAFE_FLOW_RATE_MAX} L/min",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == ADDR_VALVE_POSITION_SETPOINT and not (SAFE_VALVE_POSITION_MIN <= tx.value <= SAFE_VALVE_POSITION_MAX):
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: invalid valve position",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Valve position setpoint {tx.value}% is outside valid range {SAFE_VALVE_POSITION_MIN}%–{SAFE_VALVE_POSITION_MAX}%",
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
