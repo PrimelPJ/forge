@@ -37,6 +37,8 @@ SAFE_PRESSURE_MAX = 120     # PSI, maximum safe line pressure
 SAFE_FLOW_RATE_MAX = 2500   # L/min, above this indicates an unsafe flow condition
 SAFE_VALVE_POSITION_MAX = 100  # percent open, above this is an invalid register write
 SAFE_VALVE_POSITION_MIN = 0    # percent open, below this is an invalid register write
+SAFE_PH_MIN = 65   # register value ×10: pH 6.5 minimum (below this is corrosive)
+SAFE_PH_MAX = 85   # register value ×10: pH 8.5 maximum (above this reduces chlorine efficacy)
 RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 COIL_BRUTE_THRESHOLD = 8  # coil writes in 5 seconds = brute force (T0806)
@@ -49,6 +51,7 @@ ADDR_PRESSURE_SETPOINT = 5
 ADDR_CHLORINE_SETPOINT = 6
 ADDR_FLOW_RATE_SETPOINT = 7
 ADDR_VALVE_POSITION_SETPOINT = 8
+ADDR_PH_SETPOINT = 9
 
 
 class DetectionEngine:
@@ -199,6 +202,18 @@ class DetectionEngine:
                     severity="high",
                     src_ip=tx.src_ip,
                     detail=f"Valve position setpoint {tx.value}% is outside valid range {SAFE_VALVE_POSITION_MIN}%–{SAFE_VALVE_POSITION_MAX}%",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == ADDR_PH_SETPOINT and not (SAFE_PH_MIN <= tx.value <= SAFE_PH_MAX):
+                ph = tx.value / 10
+                lo, hi = SAFE_PH_MIN / 10, SAFE_PH_MAX / 10
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: pH outside safe range",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"pH setpoint {ph:.1f} is outside safe range {lo}–{hi}",
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
