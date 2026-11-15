@@ -39,6 +39,7 @@ SAFE_VALVE_POSITION_MAX = 100  # percent open, above this is an invalid register
 SAFE_VALVE_POSITION_MIN = 0    # percent open, below this is an invalid register write
 SAFE_PH_MIN = 65   # register value ×10: pH 6.5 minimum (below this is corrosive)
 SAFE_PH_MAX = 85   # register value ×10: pH 8.5 maximum (above this reduces chlorine efficacy)
+SAFE_TURBIDITY_MAX = 1000  # NTU; above this particulates shield pathogens from chlorination
 RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 COIL_BRUTE_THRESHOLD = 8  # coil writes in 5 seconds = brute force (T0806)
@@ -52,6 +53,7 @@ ADDR_CHLORINE_SETPOINT = 6
 ADDR_FLOW_RATE_SETPOINT = 7
 ADDR_VALVE_POSITION_SETPOINT = 8
 ADDR_PH_SETPOINT = 9
+ADDR_TURBIDITY_SETPOINT = 10
 
 
 class DetectionEngine:
@@ -214,6 +216,16 @@ class DetectionEngine:
                     severity="high",
                     src_ip=tx.src_ip,
                     detail=f"pH setpoint {ph:.1f} is outside safe range {lo}–{hi}",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == ADDR_TURBIDITY_SETPOINT and tx.value > SAFE_TURBIDITY_MAX:
+                return [Alert(
+                    rule_id="ICS-003",
+                    title="Dangerous setpoint: turbidity exceeded",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Turbidity setpoint {tx.value} NTU exceeds safe max {SAFE_TURBIDITY_MAX} NTU",
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
