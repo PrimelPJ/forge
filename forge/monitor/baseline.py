@@ -54,6 +54,7 @@ class ProcessBaseline:
         self.chlorine = Baseline()
         self.inlet_pressure = Baseline()
         self.flow_rate = Baseline()
+        self.ph_level = Baseline()
 
     def update(self, snapshot: dict) -> list[str]:
         """Feed in a plant snapshot. Returns list of anomaly descriptions."""
@@ -86,5 +87,13 @@ class ProcessBaseline:
                 f"Flow rate {snapshot['flow_rate']:.1f} L/min deviates from "
                 f"baseline {self.flow_rate.mean:.1f} +/- {self.flow_rate.std:.1f}"
             )
+
+        if "ph_level" in snapshot:
+            self.ph_level.add(snapshot["ph_level"])
+            if self.ph_level.is_anomaly(snapshot["ph_level"]):
+                anomalies.append(
+                    f"pH level {snapshot['ph_level']:.2f} deviates from "
+                    f"baseline {self.ph_level.mean:.2f} +/- {self.ph_level.std:.2f}"
+                )
 
         return anomalies
