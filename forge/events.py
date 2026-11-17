@@ -36,6 +36,7 @@ class TrafficLog:
 
     src_ip: str
     src_port: int
+    dst_ip: str
     dst_port: int
     unit_id: int
     function_code: int
