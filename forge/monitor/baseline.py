@@ -55,6 +55,7 @@ class ProcessBaseline:
         self.inlet_pressure = Baseline()
         self.flow_rate = Baseline()
         self.ph_level = Baseline()
+        self.turbidity = Baseline()
 
     def update(self, snapshot: dict) -> list[str]:
         """Feed in a plant snapshot. Returns list of anomaly descriptions."""
@@ -94,6 +95,14 @@ class ProcessBaseline:
                 anomalies.append(
                     f"pH level {snapshot['ph_level']:.2f} deviates from "
                     f"baseline {self.ph_level.mean:.2f} +/- {self.ph_level.std:.2f}"
+                )
+
+        if "turbidity" in snapshot:
+            self.turbidity.add(snapshot["turbidity"])
+            if self.turbidity.is_anomaly(snapshot["turbidity"]):
+                anomalies.append(
+                    f"Turbidity {snapshot['turbidity']:.1f} NTU deviates from "
+                    f"baseline {self.turbidity.mean:.1f} +/- {self.turbidity.std:.1f}"
                 )
 
         return anomalies
