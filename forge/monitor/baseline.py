@@ -56,6 +56,7 @@ class ProcessBaseline:
         self.flow_rate = Baseline()
         self.ph_level = Baseline()
         self.turbidity = Baseline()
+        self.dissolved_oxygen = Baseline()
 
     def update(self, snapshot: dict) -> list[str]:
         """Feed in a plant snapshot. Returns list of anomaly descriptions."""
@@ -103,6 +104,14 @@ class ProcessBaseline:
                 anomalies.append(
                     f"Turbidity {snapshot['turbidity']:.1f} NTU deviates from "
                     f"baseline {self.turbidity.mean:.1f} +/- {self.turbidity.std:.1f}"
+                )
+
+        if "dissolved_oxygen" in snapshot:
+            self.dissolved_oxygen.add(snapshot["dissolved_oxygen"])
+            if self.dissolved_oxygen.is_anomaly(snapshot["dissolved_oxygen"]):
+                anomalies.append(
+                    f"Dissolved oxygen {snapshot['dissolved_oxygen']:.2f} mg/L deviates from "
+                    f"baseline {self.dissolved_oxygen.mean:.2f} +/- {self.dissolved_oxygen.std:.2f}"
                 )
 
         return anomalies
