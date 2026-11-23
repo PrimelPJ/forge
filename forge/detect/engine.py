@@ -232,6 +232,16 @@ class DetectionEngine:
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
+            if tx.address == ADDR_TEMPERATURE_SETPOINT and not (SAFE_TEMP_MIN <= tx.value <= SAFE_TEMP_MAX):
+                return [Alert(
+                    rule_id="ICS-007",
+                    title="Dangerous setpoint: temperature out of range",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Temperature setpoint {tx.value}°C is outside safe range {SAFE_TEMP_MIN}–{SAFE_TEMP_MAX}°C",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
         return []
 
     def _rule_estop_manipulation(self, tx: Transaction) -> list[Alert]:
