@@ -40,6 +40,8 @@ SAFE_VALVE_POSITION_MIN = 0    # percent open, below this is an invalid register
 SAFE_PH_MIN = 65   # register value ×10: pH 6.5 minimum (below this is corrosive)
 SAFE_PH_MAX = 85   # register value ×10: pH 8.5 maximum (above this reduces chlorine efficacy)
 SAFE_TURBIDITY_MAX = 1000  # NTU; above this particulates shield pathogens from chlorination
+SAFE_TEMP_MIN = 0    # °C, below this indicates sensor fault or freezing condition
+SAFE_TEMP_MAX = 100  # °C, above this indicates dangerous overheating
 RATE_THRESHOLD = 5.0  # requests/sec considered flooding
 SCAN_THRESHOLD = 5    # unique unit IDs in 10 seconds = recon
 COIL_BRUTE_THRESHOLD = 8  # coil writes in 5 seconds = brute force (T0806)
@@ -54,6 +56,7 @@ ADDR_FLOW_RATE_SETPOINT = 7
 ADDR_VALVE_POSITION_SETPOINT = 8
 ADDR_PH_SETPOINT = 9
 ADDR_TURBIDITY_SETPOINT = 10
+ADDR_TEMPERATURE_SETPOINT = 11
 
 
 class DetectionEngine:
@@ -226,6 +229,16 @@ class DetectionEngine:
                     severity="high",
                     src_ip=tx.src_ip,
                     detail=f"Turbidity setpoint {tx.value} NTU exceeds safe max {SAFE_TURBIDITY_MAX} NTU",
+                    mitre_id="T0836",
+                    mitre_tactic="Impair Process Control",
+                )]
+            if tx.address == ADDR_TEMPERATURE_SETPOINT and not (SAFE_TEMP_MIN <= tx.value <= SAFE_TEMP_MAX):
+                return [Alert(
+                    rule_id="ICS-007",
+                    title="Dangerous setpoint: temperature out of range",
+                    severity="high",
+                    src_ip=tx.src_ip,
+                    detail=f"Temperature setpoint {tx.value}°C is outside safe range {SAFE_TEMP_MIN}–{SAFE_TEMP_MAX}°C",
                     mitre_id="T0836",
                     mitre_tactic="Impair Process Control",
                 )]
